@@ -467,3 +467,40 @@ You should see:
 * a rectangle showing the world boundaries
 
 Closing the window cleanly exits the simulation. No robot, food, or score is present yet—that will be added in Step 1B.
+
+---
+
+# Step 1B — Robot, Food, and Debug Controls
+
+Step 1B completes the sandbox described in STEP 1 by adding a controllable robot, food spawning, collision-based scoring, and a simple on-screen HUD.
+
+## Behaviors in Step 1B
+
+When you run the simulation after Step 1B is implemented:
+
+* a circular **robot** appears in the world, with a small line showing its heading
+* a smaller circular **food** item appears at a random location
+* when the robot touches the food, the **score** increases and new food respawns elsewhere
+* the current score is shown in the top-left corner of the window
+
+## Manual controls
+
+You can drive the robot using either arrow keys or WASD:
+
+* **Forward**: Up arrow or `W`
+* **Backward** (optional, for debugging): Down arrow or `S`
+* **Turn left**: Left arrow or `A`
+* **Turn right**: Right arrow or `D`
+
+This manual controller is only for debugging and visualization. In later steps (STEP 2 and beyond), sensors and a brain interface will take over control.
+
+## Definition of done for Step 1B
+
+Step 1B is complete when:
+
+* the simulation window opens successfully
+* the robot is visible and responds to the manual controls
+* food items spawn one at a time in the world
+* touching food increases the score and respawns food at a new location
+* the current score is clearly visible on screen
+* the codebase remains modular (world, agents, render, etc.) and ready for sensors/brain to be added next

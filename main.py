@@ -23,6 +23,21 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
 
+        # Manual keyboard controls (Step 1B)
+        keys = pygame.key.get_pressed()
+        forward = 0.0
+        turn = 0.0
+
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            forward += 1.0
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            forward -= 1.0
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            turn -= 1.0
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            turn += 1.0
+
+        env.handle_manual_controls(forward, turn)
         env.update(dt)
         renderer.render_frame()
 

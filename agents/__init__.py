@@ -1,7 +1,4 @@
-"""
-Agents package.
+from .robot import Robot
 
-Step 1A does not yet define concrete agents; this package exists so that
-robot and brain components can be added cleanly in later steps.
-"""
+__all__ = ["Robot"]
 
