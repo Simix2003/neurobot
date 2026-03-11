@@ -18,3 +18,8 @@ FOOD_COLOR: tuple[int, int, int] = (0, 220, 120)
 
 SCORE_TEXT_COLOR: tuple[int, int, int] = (240, 240, 240)
 
+# Sensors & brain (Step 2)
+SENSOR_RAY_COLOR_FOOD: tuple[int, int, int] = (255, 200, 0)
+SENSOR_RAY_COLOR_WALL: tuple[int, int, int] = (200, 80, 255)
+
+

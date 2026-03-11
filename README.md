@@ -504,3 +504,72 @@ Step 1B is complete when:
 * touching food increases the score and respawns food at a new location
 * the current score is clearly visible on screen
 * the codebase remains modular (world, agents, render, etc.) and ready for sensors/brain to be added next
+
+---
+
+# Step 2 — Sensors and Brain Interface
+
+Step 2 adds a simple sensor system and a small neural \"brain\" on top of the sandbox from Steps 1A and 1B. The goal is to complete the loop:
+
+```text
+world -> sensors -> brain -> actions
+```
+
+The robot’s behavior does not need to be good yet; it can still look random. The important part is that the pipeline works end-to-end.
+
+## Sensors
+
+For each frame, the robot computes:
+
+* **food_distance**: normalized distance to the current food target
+* **food_angle**: relative angle from the robot’s heading to the food direction
+* **wall_front**: normalized distance to the nearest wall in front of the robot
+* **wall_left**: normalized distance to the nearest wall to the left
+* **wall_right**: normalized distance to the nearest wall to the right
+
+These values are kept in stable numeric ranges and are used as inputs to the brain.
+
+On screen you can see:
+
+* a **yellow ray** toward the food direction
+* **purple rays** for the wall distances (front, left, right)
+* a short text line showing the numeric sensor values
+
+## Brain interface
+
+The brain is a small PyTorch MLP that receives the 5 sensor values:
+
+```text
+[food_distance, food_angle, wall_front, wall_left, wall_right]
+```
+
+and outputs 2 movement commands:
+
+```text
+[forward_value, turn_value]
+```
+
+These outputs are used directly as the `forward` and `turn` inputs to the robot’s movement function. Weights are random in Step 2; there is no training yet.
+
+## Control modes
+
+The simulation now has two control modes:
+
+* **Brain** (default): the robot moves according to the brain outputs computed from sensors.
+* **Manual**: the robot uses the keyboard controls from Step 1B.
+
+You can toggle between modes at runtime:
+
+* press **M** to switch between **BRAIN** and **MANUAL**.
+
+The current mode is shown in the HUD at the top-left of the window.
+
+## Definition of done for Step 2
+
+Step 2 is complete when:
+
+* sensor values update correctly every frame
+* sensor rays and debug text are visible on screen
+* the brain receives valid numeric input from the sensors
+* the brain’s outputs drive robot movement in brain mode
+* manual control is no longer required for the normal run mode, but can be toggled on for debugging

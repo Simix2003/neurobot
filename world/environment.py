@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import numpy as np
 import pygame
 
-from agents import Robot
+from agents import Brain, Robot
+from agents.sensors import SensorReadings, compute_sensor_readings
 from config import (
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
@@ -28,6 +30,11 @@ class Environment:
     food: Food = field(default_factory=spawn_food_random)
     score: int = 0
 
+    brain: Brain = field(default_factory=Brain)
+    control_mode: str = "brain"  # "brain" or "manual"
+
+    sensors: SensorReadings | None = None
+
     _pending_forward: float = 0.0
     _pending_turn: float = 0.0
 
@@ -37,15 +44,30 @@ class Environment:
         self._pending_turn = max(-1.0, min(1.0, turn))
 
     def update(self, dt: float) -> None:
-        """Advance world simulation by dt seconds.
+        """Advance world simulation by dt seconds."""
+        if dt <= 0.0:
+            return
 
-        Step 1A keeps this as a placeholder so the loop structure is ready.
-        """
-        # Apply controls to robot
-        if dt > 0.0:
+        if self.control_mode == "brain":
+            # Compute sensors and query brain for movement
+            self.sensors = compute_sensor_readings(self.robot, self.food)
+            inputs = np.array(
+                [
+                    self.sensors.food_distance,
+                    self.sensors.food_angle,
+                    self.sensors.wall_front,
+                    self.sensors.wall_left,
+                    self.sensors.wall_right,
+                ],
+                dtype=float,
+            )
+            forward, turn = self.brain.forward(inputs)
+            self.robot.apply_manual_input(forward, turn, dt)
+        else:
+            # Manual mode (Step 1B behavior)
             self.robot.apply_manual_input(self._pending_forward, self._pending_turn, dt)
 
-        # Reset controls so we do not accumulate stale input
+        # Reset manual controls so we do not accumulate stale input
         self._pending_forward = 0.0
         self._pending_turn = 0.0
 
