@@ -1,3 +1,6 @@
+import os
+import csv
+
 import pygame
 
 from config import WINDOW_WIDTH, WINDOW_HEIGHT, FPS
@@ -12,6 +15,28 @@ def main() -> None:
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     clock = pygame.time.Clock()
 
+    # Prepare runs/ directory and episode log file
+    base_dir = os.path.dirname(__file__)
+    runs_dir = os.path.join(base_dir, "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+    episodes_log_path = os.path.join(runs_dir, "episodes.csv")
+
+    # Ensure CSV has a header
+    if not os.path.exists(episodes_log_path) or os.path.getsize(episodes_log_path) == 0:
+        with open(episodes_log_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "episode",
+                    "mode",
+                    "food_collected",
+                    "distance_traveled",
+                    "episode_length_seconds",
+                    "steps",
+                    "reward",
+                ]
+            )
+
     env = Environment(WINDOW_WIDTH, WINDOW_HEIGHT)
     renderer = Renderer(screen, env)
 
@@ -23,9 +48,13 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                # Toggle between brain and manual control
+                # Explicitly select control modes
                 if event.key == pygame.K_m:
-                    env.control_mode = "manual" if env.control_mode == "brain" else "brain"
+                    env.control_mode = "manual"
+                elif event.key == pygame.K_b:
+                    env.control_mode = "brain"
+                elif event.key == pygame.K_h:
+                    env.control_mode = "heuristic"
 
         # Manual keyboard controls are only applied in manual mode
         if env.control_mode == "manual":
@@ -43,7 +72,32 @@ def main() -> None:
                 turn += 1.0
 
             env.handle_manual_controls(forward, turn)
-        env.update(dt)
+
+        done, metrics = env.update(dt)
+
+        if done and metrics is not None:
+            # Console summary
+            print(
+                "Episode {episode} | mode={mode} | food={food_collected} | "
+                "dist={distance_traveled:.1f} | length={episode_length_seconds:.1f}s | "
+                "steps={steps} | reward={reward:.2f}".format(**metrics)
+            )
+
+            # Append to CSV log
+            with open(episodes_log_path, "a", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(
+                    [
+                        metrics["episode"],
+                        metrics["mode"],
+                        metrics["food_collected"],
+                        metrics["distance_traveled"],
+                        metrics["episode_length_seconds"],
+                        metrics["steps"],
+                        metrics["reward"],
+                    ]
+                )
+
         renderer.render_frame()
 
     pygame.quit()

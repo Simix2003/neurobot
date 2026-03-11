@@ -36,15 +36,26 @@ class Renderer:
         if self._font is None:
             self._font = pygame.font.SysFont("consolas", 18)
 
-        # Score
-        score_text = f"Score: {self._environment.score}"
+        # Score (per-episode)
+        score_text = f"Score (episode): {self._environment.score}"
         surf = self._font.render(score_text, True, SCORE_TEXT_COLOR)
         self._screen.blit(surf, (10, 10))
 
+        # Episode info
+        episode_text = (
+            f"Episode: {self._environment.episode_index}  "
+            f"t={self._environment.time_in_episode:5.1f}s  "
+            f"food={self._environment.food_collected_in_episode}"
+        )
+        surf_episode = self._font.render(episode_text, True, SCORE_TEXT_COLOR)
+        self._screen.blit(surf_episode, (10, 32))
+
         # Control mode
-        mode_text = f"Mode: {self._environment.control_mode.upper()} (press M to toggle)"
+        mode_label = self._environment.control_mode.upper()
+        mode_help = "[M] manual  [B] brain  [H] heuristic"
+        mode_text = f"Mode: {mode_label}  {mode_help}"
         surf_mode = self._font.render(mode_text, True, SCORE_TEXT_COLOR)
-        self._screen.blit(surf_mode, (10, 32))
+        self._screen.blit(surf_mode, (10, 54))
 
         # Sensor values (if available)
         sensors = getattr(self._environment, "sensors", None)
@@ -57,7 +68,7 @@ class Renderer:
                 f"wR={sensors.wall_right:.2f}"
             )
             surf_sensors = self._font.render(sensor_text, True, SCORE_TEXT_COLOR)
-            self._screen.blit(surf_sensors, (10, 54))
+            self._screen.blit(surf_sensors, (10, 76))
 
         self._draw_sensor_rays()
 
