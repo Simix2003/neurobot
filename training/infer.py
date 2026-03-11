@@ -70,7 +70,7 @@ def main() -> None:
         obs_t = torch.from_numpy(obs_np)
 
         with torch.no_grad():
-            action_t, _ = policy.act(obs_t, deterministic=True)
+            action_t, _, _ = policy.act(obs_t, deterministic=True)
 
         action_np = action_t.cpu().numpy()
         forward = float(np.clip(action_np[0], -1.0, 1.0))

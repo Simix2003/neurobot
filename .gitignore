@@ -1,2 +1,17 @@
+# Virtual environments
 .venv/
-*.pyc
+venv/
+
+# Python cache / compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Project run artifacts and logs
+runs/
